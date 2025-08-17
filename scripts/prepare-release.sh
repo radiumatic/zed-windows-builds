@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Script to prepare release files from build artifacts
-# This script handles both Vulkan and OpenGL builds, creating releases even if one fails
 
 set -euo pipefail
 
@@ -11,18 +10,11 @@ RELEASE_DIR="release"
 # Create release directory
 mkdir -p "$RELEASE_DIR"
 
-# Check if Vulkan build exists
-if [ -f "$ARTIFACTS_DIR/zed-release/zed.exe" ]; then
-    echo "Found Vulkan build, adding to release..."
-    mv "$ARTIFACTS_DIR/zed-release/zed.exe" "$RELEASE_DIR/zed.exe"
-    zip -j "$RELEASE_DIR/zed.zip" -9 "$RELEASE_DIR/zed.exe"
-fi
-
-# Check if OpenGL build exists
-if [ -f "$ARTIFACTS_DIR/zed-release-opengl/zed.exe" ]; then
-    echo "Found OpenGL build, adding to release..."
-    mv "$ARTIFACTS_DIR/zed-release-opengl/zed.exe" "$RELEASE_DIR/zed-opengl.exe"
-    zip -j "$RELEASE_DIR/zed-opengl.zip" -9 "$RELEASE_DIR/zed-opengl.exe"
+# Check if GLES build exists
+if [ -f "$ARTIFACTS_DIR/zed-linux-gles/zed" ]; then
+    echo "Found GLES build, adding to release..."
+    mv "$ARTIFACTS_DIR/zed-linux-gles/zed" "$RELEASE_DIR/zed"
+    zip -j "$RELEASE_DIR/zed-linux-gles.zip" -9 "$RELEASE_DIR/zed"
 fi
 
 # Generate checksums for existing files in release folder

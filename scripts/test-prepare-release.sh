@@ -20,14 +20,9 @@ setup_test() {
     mkdir -p artifacts
 }
 
-create_vulkan_artifact() {
-    mkdir -p artifacts/zed-release
-    echo "fake vulkan executable" > artifacts/zed-release/zed.exe
-}
-
-create_opengl_artifact() {
-    mkdir -p artifacts/zed-release-opengl
-    echo "fake opengl executable" > artifacts/zed-release-opengl/zed.exe
+create_gles_artifact() {
+    mkdir -p artifacts/zed-linux-gles
+    echo "fake gles executable" > artifacts/zed-linux-gles/zed
 }
 
 verify_file_exists() {
@@ -69,37 +64,16 @@ run_test() {
     fi
 }
 
-# Test 1: Both Vulkan and OpenGL builds exist
-setup_test "Both builds exist"
-create_vulkan_artifact
-create_opengl_artifact
+# Test 1: GLES build exists
+setup_test "GLES build exists"
+create_gles_artifact
 run_test "success"
-verify_file_count 5  # zed.exe, zed.zip, zed-opengl.exe, zed-opengl.zip, sha256sums.txt
-verify_file_exists "release/zed.exe"
-verify_file_exists "release/zed.zip"
-verify_file_exists "release/zed-opengl.exe"
-verify_file_exists "release/zed-opengl.zip"
+verify_file_count 3  # zed, zed-linux-gles.zip, sha256sums.txt
+verify_file_exists "release/zed"
+verify_file_exists "release/zed-linux-gles.zip"
 verify_file_exists "release/sha256sums.txt"
 
-# Test 2: Only Vulkan build exists
-setup_test "Only Vulkan build exists"
-create_vulkan_artifact
-run_test "success"
-verify_file_count 3  # zed.exe, zed.zip, sha256sums.txt
-verify_file_exists "release/zed.exe"
-verify_file_exists "release/zed.zip"
-verify_file_exists "release/sha256sums.txt"
-
-# Test 3: Only OpenGL build exists
-setup_test "Only OpenGL build exists"
-create_opengl_artifact
-run_test "success"
-verify_file_count 3  # zed-opengl.exe, zed-opengl.zip, sha256sums.txt
-verify_file_exists "release/zed-opengl.exe"
-verify_file_exists "release/zed-opengl.zip"
-verify_file_exists "release/sha256sums.txt"
-
-# Test 4: No builds exist
+# Test 2: No builds exist
 setup_test "No builds exist"
 run_test "failure"
 # Should have no release directory or empty release directory
@@ -110,10 +84,9 @@ if [ -d "release" ] && [ "$(ls -A release)" ]; then
 fi
 echo "✅ No release files created when no builds exist"
 
-# Test 5: Verify checksums are correct
+# Test 3: Verify checksums are correct
 setup_test "Checksum verification"
-create_vulkan_artifact
-create_opengl_artifact
+create_gles_artifact
 run_test "success"
 
 # Verify checksums
@@ -126,13 +99,13 @@ else
 fi
 cd ..
 
-# Test 6: Verify zip files contain executables
+# Test 4: Verify zip files contain executables
 setup_test "Zip file content verification"
-create_vulkan_artifact
+create_gles_artifact
 run_test "success"
 
 # Check zip content
-if unzip -l release/zed.zip | grep -q "zed.exe"; then
+if unzip -l release/zed-linux-gles.zip | grep -q "zed"; then
     echo "✅ Zip file contains executable"
 else
     echo "❌ FAIL: Zip file does not contain executable"

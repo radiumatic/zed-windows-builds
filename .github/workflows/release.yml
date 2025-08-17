@@ -35,15 +35,11 @@ jobs:
       - name: Verify downloaded artifacts
         run: |
           echo "Downloaded artifacts:"
-          find artifacts -type f -name "*.exe" -exec ls -la {} \;
+          find artifacts -type f -name "zed" -exec ls -la {} \;
 
-          # Check if Vulkan build exists
-          if [ ! -f "artifacts/zed-release/zed.exe" ]; then
-            echo "❌ FAIL: Vulkan artifact not found"
-          fi
-
-          if [ ! -f "artifacts/zed-release-opengl/zed.exe" ]; then
-            echo "❌ FAIL: OpenGL artifact not found"
+          if [ ! -f "artifacts/zed-linux-gles/zed" ]; then
+            echo "❌ FAIL: GLES artifact not found"
+            exit 1
           fi
 
       - name: Create release directories and zip
